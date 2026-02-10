@@ -1,0 +1,5 @@
+When we run the program, we get the Error: 'ZeroDivisionError'
+which, as the name indicates, means that there is an invalid division on the program where the denominator is 0
+When we debug the program (i set the first print as the breakpoint) and step into the function we see that the first print has no errors
+However, when we do the same for the second print, we notice that the value t1 = g(c,d) becomes 0 as g(c,d) = c - d = 3 -3 = 0
+So, on the next step of the 'f' function the division is not obtainable and we obtain the error
