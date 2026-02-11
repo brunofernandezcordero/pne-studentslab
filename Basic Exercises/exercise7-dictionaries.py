@@ -17,5 +17,6 @@ print("Number of subjects:", len(student["subjects"]))
 print("Enrolled in PNE:","PNE" in student["subjects"])
 print("Databeses grade:", student["grades"]["Databases"])
 print("Average grade:",avg)
-for i in grades.items():
-    print(f"{key}: {value}")
+print("Subject grades:")
+for key,value in grades.items():
+    print(f"    {key}: {value}")
