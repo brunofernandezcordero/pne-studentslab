@@ -9,7 +9,7 @@ def counting(base):
 
     return count_dict
 
-if __name__ == '__main__':
+if __name__ == '__main__': # “only run this code if this file is executed directly, not if it’s imported.”
     base = input('Enter the base to be counted')
     print('Total length:', len(base))
     count_dict = counting(base)
