@@ -1,5 +1,7 @@
 with open('dna.txt') as f:
     data = f.read().replace('\n','')
+
+
 def counting(data):
     count_dict = {}
     for i in data:
@@ -13,3 +15,6 @@ def counting(data):
     return
 
 counting(data)
+
+# if __name__ == '__main__':
+# prints to introduce the sequence, total length and each base count
