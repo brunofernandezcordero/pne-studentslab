@@ -1,5 +1,6 @@
-with open('dna.txt') as f:
-    data = f.read().replace('\n','')
+if __name__ == '__main__' :
+    with open('dna.txt') as f:
+        data = f.read().replace('\n','')
 
 
 def counting(data):
