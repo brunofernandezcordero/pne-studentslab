@@ -8,7 +8,7 @@ for i in words:
 
 
 
-print("--- Exercise 5b ---")
+print("\n--- Exercise 5b ---")
 n = 1
 print(n)
 while n <= 1000:

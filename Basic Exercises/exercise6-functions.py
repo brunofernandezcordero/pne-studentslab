@@ -8,7 +8,7 @@ print("is_even(0):",is_even(0))
 print("is_even(-3):",is_even(-3))
 print("is_even(10):",is_even(10))
 
-print("--- Exercise 6b ---")
+print("\n--- Exercise 6b ---")
 def classify_triangle(a,b,c):
     if a == b and b == c and c == a:
         triangle = "equilateral"
