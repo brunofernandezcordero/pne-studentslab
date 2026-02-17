@@ -8,5 +8,4 @@ for line in file_contents.split("\n"):
     if not line.startswith(">"):
         body += line
 
-print("The total number of bases in the ADA.txt head is:")
-print((len(body)))
+print("The total number of bases in the ADA.txt head is:", len(body))
