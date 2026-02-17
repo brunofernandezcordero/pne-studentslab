@@ -31,19 +31,21 @@ if exon_base:
 # Ahora tengo la lista exons con cada base sequence de cada exon en order
 
 max_cord = 44652852
-exon_number = 1
+exon_number = 0
 print(f"{'Exon'}     | {'Long.'}     | {'Start'}     |{'End:'}")
 print('-'*50)
 for exon in exons:
+    exon_number += 1
     start_index = complete_ADA.find(exon)
     if start_index == -1:
         print(f"Exon {exon_number} not found!")
-        continue # Me sale que ninguno es encontrado en el ADA compelto. Lo he comprobado manualmente y tampoco me encuentra los primeros exons
+        continue
+         # Me sale que ninguno es encontrado en el ADA compelto. Lo he comprobado manualmente y tampoco me encuentra los primeros exons
     length = len(exon)
 
     start_coord = max_cord - start_index
     end_coord = start_coord - (length -1 )
     print(f"{exon_number}     | {length}     | {start_coord}     | {end_coord}      ")
-    exon_number += 1
+
 
 
