@@ -31,7 +31,7 @@ def seq_count(seq):
 
 def seq_reverse(seq,n):
     for i in range(n):
-        fragment  = seq[0: (n + 1)]
+        fragment  = seq[0: n]
         reverse = fragment[::-1]
     return fragment, reverse
 
