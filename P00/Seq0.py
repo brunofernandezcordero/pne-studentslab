@@ -31,7 +31,19 @@ def seq_count(seq):
 
 def seq_reverse(seq,n):
     for i in range(n):
-        fragment  = seq[0:n]
+        fragment  = seq[0: (n + 1)]
         reverse = fragment[::-1]
     return fragment, reverse
 
+def seq_complement(seq):
+    comp = ""
+    for i in seq:
+        if i == "A":
+            comp += "T"
+        elif i == "T":
+            comp += "A"
+        elif i == "C":
+            comp += "G"
+        elif i == "G":
+            comp += "C"
+    return comp
