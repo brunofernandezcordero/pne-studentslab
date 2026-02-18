@@ -1,10 +1,10 @@
 from Seq0 import seq_read_fasta
-
-
+FOLDER = "../sequences/"
 FILE = "U5.txt"
-read_file = seq_read_fasta(FILE)
+filename = FOLDER + FILE
+base = seq_read_fasta(filename)
 
 
 print(f"DNA file: {FILE}")
 print("the first 20 bases are:")
-print(read_file[0:20])
+print(base[0:20])
