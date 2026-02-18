@@ -33,7 +33,7 @@ if exon_base:
 
 
 
-max_cord = 44652852 #posicion inicial (reversa)
+max_cord = 44652852 #posicion inicial (el counting es en reversa)
 exon_number = 0
 print(f" {'Exon'}          | {'Long.'}          | {'Start'}          |{'End:'}          ")
 print('-'*50)
