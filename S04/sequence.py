@@ -1,6 +1,6 @@
 from pathlib import Path
 
-FILENAME = "sequences/ADA.txt"
+FILENAME = "../sequences/ADA.txt"
 file_contents = Path(FILENAME).read_text()
 
 body = ""
