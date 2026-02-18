@@ -13,4 +13,25 @@ def seq_read_fasta(filename):
 def seq_len(seq):
     return len(seq)
 
-def seq_count_bases(seq,base):
+def seq_count_base(seq,base):
+    base_count = 0
+    for i in seq:
+        if i.upper() == base:
+            base_count += 1
+    return base_count
+
+def seq_count(seq):
+    gene_dict = {}
+    for i in seq:
+        if i not in gene_dict.keys():
+            gene_dict[i] = 1
+        else:
+            gene_dict[i] += 1
+    return gene_dict
+
+def seq_reverse(seq,n):
+    for i in range(n):
+        fragment  = seq[0:n]
+        reverse = fragment[::-1]
+    return fragment, reverse
+
