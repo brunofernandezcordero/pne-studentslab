@@ -14,5 +14,6 @@ if __name__ == "__main__":
             if count >= max_base_count:
                 max_base = base
 
+
         print(f"Gene {gene}: Most Frequent base: {max_base}")
 
