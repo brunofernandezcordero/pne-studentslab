@@ -15,8 +15,6 @@ class Seq:
             print("INCORRECT sequence detected!")
             self.strbases = "ERROR!"
 
-
-
     def __str__(self):
         """Method called when the object is being printed"""
         return self.strbases
@@ -26,9 +24,11 @@ class Seq:
         return len(self.strbases)
 
 
-# --- Main program
-s1 = Seq("ACCTGC")
-s2 = Seq("Hello? Am I a valid sequence?")
-print(f"Sequence 1: {s1}")
-print(f"Sequence 2: {s2}")
+def print_seqs(seq_list):
+    j = 0
+    for i in seq_list:
+        print(f"Sequence {j}: (Length: {i.len()}) {i}")
+        j += 1
 
+seq_list = [Seq("ACT"), Seq("GATA"), Seq("CAGATA")]
+print(print_seqs(seq_list))
