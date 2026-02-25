@@ -27,8 +27,21 @@ class Seq:
         if self.strbases == "NULL" or self.strbases == "ERROR":
             count = 0
         else:
-            count = 0
-            for i in base:
-                if i.upper() == base:
-                    count += 1
+            count = self.strbases.count(base)
         return count
+
+    def count(self):
+            gene_dict = ["A","C","T","G"]
+            d = {}
+            for bases in gene_dict:
+                d[bases] = self.strbases.count(bases)
+            return d
+
+    def reverse(self):
+        if self.strbases == "NULL":
+            reverse = "NULL"
+        elif self.strbases == "ERROR":
+            reverse = "ERROR"
+        else:
+            reverse = self.strbases[::-1]
+        return reverse
