@@ -34,4 +34,4 @@ print_seqs(seq_list1,'magenta')
 
 print()
 print("List 2:")
-print_seqs(seq_list2,'cyan')
+print_seqs(seq_list2,'yellow')

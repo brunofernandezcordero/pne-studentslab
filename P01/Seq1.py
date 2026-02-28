@@ -45,3 +45,22 @@ class Seq:
         else:
             reverse = self.strbases[::-1]
         return reverse
+
+    def complement(self):
+        comp = ""
+        if self.strbases == "NULL" or self.strbases == "ERROR":
+            comp = "ERROR"
+        else:
+            for i in self.strbases:
+                if i == "A":
+                    comp += "T"
+                elif i == "T":
+                    comp += "A"
+                elif i == "C":
+                    comp += "G"
+                elif i == "G":
+                    comp += "C"
+        return comp
+
+    def read_fasta(self,filename):
+
