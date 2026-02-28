@@ -1,3 +1,4 @@
+from pathlib import Path
 class Seq:
     def __init__(self,strbases=None):
         self.strbases = strbases
@@ -62,5 +63,12 @@ class Seq:
                     comp += "C"
         return comp
 
-    def read_fasta(self,filename):
+    def read_fasta(self,FILENAME):
+        FILENAME = "../sequences/" + FILENAME + ".txt"
+        file_contents = Path(FILENAME).read_text()
+        body = ""
+        for line in file_contents.split("\n"):
+            if not line.startswith(">"):
+                body += line
+        return body
 
