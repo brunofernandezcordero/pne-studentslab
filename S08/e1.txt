@@ -1,0 +1,2 @@
+mobile, wifi, Mar 3rd, lab, 10.8.32.1
+lab computer, wire, Mar 3rd, lab, 212.128.255.82
