@@ -19,6 +19,6 @@ for gene in genes:
 
     gene_bases = s.read_fasta(gene)
     importing = c.talk(f"Sending {gene} to the server...")
-
+    print(f"{importing}\nTo Server: Sending {gene} to the server...")
     send_bases = c.talk(str(gene_bases))
-    print(f"To Server: {send_bases}")
+    print(f"\n {importing}\nTo Server: {str(gene_bases)}")
