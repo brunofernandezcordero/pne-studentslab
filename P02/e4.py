@@ -14,9 +14,11 @@ c = Client(IP, PORT)
 print(c)
 s = Seq()
 genes = ["U5","ADA","FRAT1"]
+
 for gene in genes:
-    gene_bases = Seq(s.read_fasta(gene))
+
+    gene_bases = s.read_fasta(gene)
     importing = c.talk(f"Sending {gene} to the server...")
-    print(f"To Server: {importing}")
+
     send_bases = c.talk(str(gene_bases))
     print(f"To Server: {send_bases}")

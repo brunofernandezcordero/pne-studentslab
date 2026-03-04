@@ -29,7 +29,7 @@ try:
 
         # Read the message from the client, if any
         msg = clientsocket.recv(2048).decode("utf-8")
-        print("Message from client: {}".format(msg))
+        print("\nTo Server: {}".format(msg))
 
         # Send the message
         message = "\n\nHello from the teacher's server\n"
