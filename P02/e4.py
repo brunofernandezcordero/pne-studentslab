@@ -11,10 +11,10 @@ PORT = 8081
 
 # -- Create a client object
 c = Client(IP, PORT)
+print(c)
 s = Seq()
 genes = ["U5","ADA","FRAT1"]
 for gene in genes:
-    print(c)
     gene_bases = Seq(s.read_fasta(gene))
     importing = c.talk(f"Sending {gene} to the server...")
     print(f"To Server: {importing}")
