@@ -11,4 +11,4 @@ for i in range(5):
     print(f"To Server: Message {i}")
     response = c.talk(f"Message {i}")
 
-    print(f"From Server: \n{response}")
+    print(f"From Server: {response}")
