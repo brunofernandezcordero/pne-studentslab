@@ -5,5 +5,10 @@ PORT = 8080
 
 # -- Create a client object
 c = Client(IP, PORT)
-response = c.talk("Testing!!")
-print(f"Response: \n{response}")
+print("Sending a message to the server")
+for i in range(5):
+
+    print(f"To Server: Message {i}")
+    response = c.talk(f"Message {i}")
+
+    print(f"From Server: \n{response}")
