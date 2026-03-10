@@ -1,4 +1,5 @@
 from Client0 import Client
+from termcolor import colored
 
 PRACTICE = 2
 EXERCISE = 3
@@ -13,7 +14,7 @@ PORT = 8080
 c = Client(IP, PORT)
 print("Sending a message to the server")
 for i in range(5):
-    print(f"Message {i}")
+    print(colored((f"Message {i}"),"blue")
     response = c.talk(f"Message {i}")
 
     print(f"From Server: \n{response}")
