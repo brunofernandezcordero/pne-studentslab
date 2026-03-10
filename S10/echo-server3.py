@@ -36,6 +36,7 @@ while True:
         if len(client_list) == 5:
             for j,i in enumerate(client_list):
                 print(f"Client {j}: {i}")
+            break
 
         cs.close()  # close only the client socket
 
