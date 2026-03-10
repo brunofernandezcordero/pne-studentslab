@@ -8,7 +8,7 @@ ls.bind((IP, PORT))  # binding the socket to an address
 ls.listen()  # Configurating the socket in listening mode
 
 print("The server is configured")
-
+connection = 0
 while True:
     print("Waiting for Clients to connect")
 
@@ -20,7 +20,8 @@ while True:
         break
 
     else:
-        print("A client has connected to the server")
+        connection += 1
+        print(f"CONNECTION {connection} Client IP,PORT: {client_ip_port}")
 
         msg_raw = cs.recv(2048)
         msg = msg_raw.decode()
