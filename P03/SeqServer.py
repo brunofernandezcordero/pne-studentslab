@@ -3,6 +3,8 @@ from P02.Client0 import Client
 import socket
 from termcolor import colored
 
+seq_list = ["ATGCGTACGTTAGCTAGCTAGGCTAACGTTGACCTAGGCTAACGT","CGTATGGCCTAGGCTTACGATCGTAGCTAGCTTACGGTACCTAGC","TTAACCGGATGCTAGCTAGGCTAACCGTAGGCTTACGATCGTAGC","GCTTAGCGATCGTACCGGATTAACCGGCTAGCTTACGATGCGTAC","ATGCGATTCGACCTAGGCTAACGTAGCTTACCGGATCGTAGCTAACGTAG"]
+
 IP = "212.128.255.84"
 PORT = 8080
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Creating the socket
@@ -32,17 +34,33 @@ while True:
 
         msg_raw = cs.recv(2048)
 
-        # Decode it for converting it into a human-readable stirng
+        # Decode it for converting it into a human-readable string
         msg = msg_raw.decode()
-        if msg.upper() == "PING":
+        cmd = msg.strip().split(" ",1)
+        command = cmd[0]
+        if command == "PING":
             response = "OK!"
-            # Print the message received
-            color_msg = colored(msg + "command","green")
-            print(f"{color_msg}")
-            print("OK!")
+        elif command == "GET":
+            i = cmd[1]
+            response = seq_list[int(i)]
+        elif command == "INFO":
+            print(f"Sequence: {cmd[1]}")
+            print(f"Total length: {len(cmd[1])}")
+            seq = Seq(cmd[1])
+            count = seq.count()
+            response = ""
+            for key,value in count.items():
+                perc = (value / len(cmd[1])) * 100
+                perc = round(perc,2)
+                response += f"{key}: {value} ({perc}%)\n"
+        elif command == "COMP":
+            seq = Seq(cmd[1])
+            response = seq.complement()
 
-            #Encode the message into bytes
-            cs.send(response.encode())
-            cs.close()
 
-        ls.close() #Close the socket.
+        color_msg = colored(f"{command} command","green" )
+        print(color_msg)
+        cs.send(response.encode())
+        print(response)
+        cs.close()
+
