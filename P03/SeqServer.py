@@ -1,6 +1,5 @@
-from P01.Seq1 import Seq
-from P02.Client0 import Client
 import socket
+from P01.Seq1 import Seq
 from termcolor import colored
 
 seq_list = ["ATGCGTACGTTAGCTAGCTAGGCTAACGTTGACCTAGGCTAACGT","CGTATGGCCTAGGCTTACGATCGTAGCTAGCTTACGGTACCTAGC","TTAACCGGATGCTAGCTAGGCTAACCGTAGGCTTACGATCGTAGC","GCTTAGCGATCGTACCGGATTAACCGGCTAGCTTACGATGCGTAC","ATGCGATTCGACCTAGGCTAACGTAGCTTACCGGATCGTAGCTAACGTAG"]
@@ -44,11 +43,9 @@ while True:
             i = cmd[1]
             response = seq_list[int(i)]
         elif command == "INFO":
-            print(f"Sequence: {cmd[1]}")
-            print(f"Total length: {len(cmd[1])}")
             seq = Seq(cmd[1])
             count = seq.count()
-            response = ""
+            response = f"Sequence: {cmd[1]}\nTotal length: {len(cmd[1])}\n"
             for key,value in count.items():
                 perc = (value / len(cmd[1])) * 100
                 perc = round(perc,2)
@@ -59,6 +56,7 @@ while True:
         elif command == "REV":
             seq = Seq(cmd[1])
             response = seq.reverse()
+
 
 
         color_msg = colored(f"{command} command","green" )
