@@ -4,7 +4,7 @@ from termcolor import colored
 
 seq_list = ["ATGCGTACGTTAGCTAGCTAGGCTAACGTTGACCTAGGCTAACGT","CGTATGGCCTAGGCTTACGATCGTAGCTAGCTTACGGTACCTAGC","TTAACCGGATGCTAGCTAGGCTAACCGTAGGCTTACGATCGTAGC","GCTTAGCGATCGTACCGGATTAACCGGCTAGCTTACGATGCGTAC","ATGCGATTCGACCTAGGCTAACGTAGCTTACCGGATCGTAGCTAACGTAG"]
 
-IP = "212.128.255.84"
+IP = "192.168.1.39"
 PORT = 8080
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Creating the socket
 
@@ -56,6 +56,9 @@ while True:
         elif command == "REV":
             seq = Seq(cmd[1])
             response = seq.reverse()
+        elif command == 'GENE':
+            s = Seq()
+            response = s.read_fasta(cmd[1])
 
 
 
