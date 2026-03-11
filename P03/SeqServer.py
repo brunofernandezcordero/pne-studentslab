@@ -56,6 +56,9 @@ while True:
         elif command == "COMP":
             seq = Seq(cmd[1])
             response = seq.complement()
+        elif command == "REV":
+            seq = Seq(cmd[1])
+            response = seq.reverse()
 
 
         color_msg = colored(f"{command} command","green" )
