@@ -1,0 +1,13 @@
+For http://127.0.0.1:8080/
+    The request line is: GET /hello HTTP/1.1
+    The path is: hello
+
+For http://127.0.0.1:8080/file.html
+    The request line is: GET /file.html HTTP/1.1
+    The path is: file.html
+
+For http://127.0.0.1:8080/hi/there?name=virus&type=corona
+    The request line is: GET /hi/there?name=virus&type=corona HTTP/1.1
+    The path is: hi there
+
+For U5: http://127.0.0.1:8080/home/alumnos/brunofcg/Escritorio/PycharmProjects/pne-studentslab/sequences/U5.txt
