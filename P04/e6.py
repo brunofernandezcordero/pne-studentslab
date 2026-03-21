@@ -30,31 +30,35 @@ def process_client(s):
 
         if path == '/favicon.ico':
             body = ""
-        else:
+
+        elif path == '/' or path == '':
+            with open('html/index.html', 'r') as f:
+                body = f.read()
+        elif path.startswith('/info/'):
             path_parts = path.split('/')
 
             if len(path_parts) >= 3:
                 base = path_parts[2]
 
-    if base =='A':
-        print(f'Base {base}')
-        with open('html/info/A.html', 'r') as f:
-            body = f.read()
-    elif base == 'C':
-        print(f'Base {base}')
-        with open('html/info/C.html', 'r') as f:
-            body = f.read()
-    elif base == 'G':
-        print(f'Base {base}')
-        with open('html/info/G.html', 'r') as f:
-            body = f.read()
-    elif base == 'T':
-        print(f'Base {base}')
-        with open('html/info/T.html', 'r') as f:
-            body = f.read()
-    else:
-        with open('error.html', 'r') as f:
-            body = f.read()
+            if base =='A':
+                print(f'Base {base}')
+                with open('html/info/A.html', 'r') as f:
+                    body = f.read()
+            elif base == 'C':
+                print(f'Base {base}')
+                with open('html/info/C.html', 'r') as f:
+                    body = f.read()
+            elif base == 'G':
+                print(f'Base {base}')
+                with open('html/info/G.html', 'r') as f:
+                    body = f.read()
+            elif base == 'T':
+                print(f'Base {base}')
+                with open('html/info/T.html', 'r') as f:
+                    body = f.read()
+            else:
+                with open('error.html', 'r') as f:
+                    body = f.read()
 
 
 
