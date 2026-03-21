@@ -35,25 +35,23 @@ def process_client(s):
 
             if len(path_parts) >= 3:
                 base = path_parts[2]
-    try:
-        if base =='A':
-            print(f'Base {base}')
-            with open('../P04/html/info/A.html', 'r') as f:
-                body = f.read()
-        elif base == 'C':
-            print(f'Base {base}')
-            with open('../P04/html/info/C.html', 'r') as f:
-                body = f.read()
-        elif base == 'G':
-            print(f'Base {base}')
-            with open('../P04/html/info/G.html', 'r') as f:
-                body = f.read()
-        elif base == 'T':
-            print(f'Base {base}')
-            with open('../P04/html/info/T.html', 'r') as f:
-                body = f.read()
-    except FileNotFoundError:
-        body = "404 Not Found"
+
+    if base =='A':
+        print(f'Base {base}')
+        with open('html/info/A.html', 'r') as f:
+            body = f.read()
+    elif base == 'C':
+        print(f'Base {base}')
+        with open('html/info/C.html', 'r') as f:
+            body = f.read()
+    elif base == 'G':
+        print(f'Base {base}')
+        with open('html/info/G.html', 'r') as f:
+            body = f.read()
+    elif base == 'T':
+        print(f'Base {base}')
+        with open('html/info/T.html', 'r') as f:
+            body = f.read()
 
 
 
