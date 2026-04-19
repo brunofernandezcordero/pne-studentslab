@@ -50,17 +50,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(str.encode(contents)))
             self.end_headers()
             self.wfile.write(str.encode(contents))
+
         elif self.path.startswith('/get'):
             index = int(arguments.get('n',['0'])[0])
-            contents = f"""
-            <html>
-                <body>
-                    <h1>Sequence number {index}</h1>
-                    <p>{seqs[index]}</p>
-                    <a href='/'> Main page </a>
-                </body>
-            </html>
-            """
+            contents = open("html/get.html").read()
+            contents = contents.replace("{{index}}", str(index))
+            contents = contents.replace("{{sequence}}", seqs[index])
             self.send_response(200)  # -- Status line: OK!
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(str.encode(contents)))
@@ -70,15 +65,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif self.path.startswith('/gene'):
             gene = arguments.get('gene',[''])[0]
             gene_txt = open(f'../sequences/{gene}.txt').read()
-            contents = f"""
-            <html>
-                <body>
-                    <h1>Gene: {gene}</h1>
-                    <p>{gene_txt}</p>
-                    <a href='/'> Main page </a>
-                </body>
-            </html>
-            """
+            contents = open("html/gene.html").read()
+            contents = contents.replace("{{gene}}", gene)
+            contents = contents.replace("{{gene_txt}}", gene_txt)
             self.send_response(200)  # -- Status line: OK!
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(str.encode(contents)))
