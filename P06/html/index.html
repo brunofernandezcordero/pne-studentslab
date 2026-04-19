@@ -28,7 +28,7 @@
 
   <hr>
 
-<form action="/gene" method="gene">
+<form action="/gene" method="get">
     <p>Get a Gene. Select the name:</p>
     <select name="gene">
         <option value="U5">U5</option>
@@ -40,5 +40,25 @@
     <button type="submit">GENE</button>
 </form>
 
+  <hr>
+        <form action="/operation" method="get">
+
+            <label>Write a sequence:</label>
+            <input type="text" name="seq">
+
+            <br><br>
+
+            <label>Select operation</label>
+
+            <input type="radio" name="op" value="info" checked> Info
+            <input type="radio" name="op" value="comp"> Comp
+            <input type="radio" name="op" value="rev"> Rev
+
+            <br><br>
+
+            <label>Perform operation:</label>
+            <button type="submit">OPERATE!</button>
+
+        </form>
   </body>
 </html>

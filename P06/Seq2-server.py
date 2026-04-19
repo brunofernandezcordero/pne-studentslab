@@ -3,6 +3,7 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+from P01.Seq1 import Seq
 
 seqs = ['ATGCTAGGCTTACGATCGGATCCTAGCTAGGCTAACGTTAGC','CGTTAACGGTAGCTAGCTTACGGAATCCGTTAGGCTAACGTA','TTGACCGTACGATGCTAGGCTTACCGATCGAATGCTAGCTTA',
         'GGCATCGTTAAGCTAGGCTAACGTTAGCTAGCTTACGATCGA','ACGTTAGCTAGGCTTACGATCGTTAACCGGATCTAGCTAGGA']
@@ -35,16 +36,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(str.encode(contents))
         elif self.path == '/ping':
-            contents = f"""
-            <html>
-                <body>
-                    <h1>PING OK!</h1>
-                    <p>The SEQ2 server is running...</p>
-                    <a href='/'> Main page </a>
-                </body>
-            </html>
-            """
-
+            contents = open('html/ping.html').read()
             self.send_response(200)  # -- Status line: OK!
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(str.encode(contents)))
@@ -73,6 +65,28 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(str.encode(contents)))
             self.end_headers()
             self.wfile.write(str.encode(contents))
+
+        elif self.path.startswith('/operation'):
+            seq_str = arguments.get('seq',[''])[0]
+            seq_str = seq_str.upper()
+            op = arguments.get('op',[''])[0]
+            seq_obj = Seq(seq_str)
+            if op == 'rev':
+                result = seq_obj.reverse()
+            elif op == 'comp':
+                result = seq_obj.complement()
+            elif op == 'info':
+                result = seq_obj.count()
+            contents = open("html/operation.html").read()
+            contents = contents.replace('{{seq}}',seq_str)
+            contents = contents.replace('{{op}}',op)
+            contents = contents.replace('{{result}}',str(result))
+            self.send_response(200)  # -- Status line: OK!
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(str.encode(contents)))
+            self.end_headers()
+            self.wfile.write(str.encode(contents))
+
         else:
             contents = Path('html/error.html').read_text()
             self.send_response(200)  # -- Status line: OK!
