@@ -95,7 +95,38 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
       </body>
     </html>
     """
-            elif self.path.startswith('/chromosomelength'):
+            elif self.path.startswith('/chromosomeLength'):
+                species_len = arguments.get('species_len',[None])[0]
+                chr = arguments.get('chr',[None])[0]
+                if not species_len or not chr:
+                    contents = Path('html/error.html').read_text()
+                else:
+                    endpoint_len = f'/info/assembly/{species_len}'
+                    species_assembly_json = get_ensembl_file((endpoint_len))
+                    chr_dicts = species_assembly_json.get('top_level_region', [])
+                    length = 'The chromosome was not found'
+                    for c in chr_dicts:
+                        if chr == c['name']:
+                            length = c['length']
+                            break
+
+                    contents = f"""
+                        <!DOCTYPE html>
+                        <html lang="en" dir="ltr">
+                          <head>
+                            <meta charset="utf-8">
+                            <title>Chromosome's Length</title>
+                          </head>
+                          <body style="background-color: lightblue;">
+                            <h1>Chromosome's Length</h1>
+                            <a href="/">Main Page</a>
+                            <p> The species you have selected is: {species_len}
+                            <p> The chromosome you have selected is: {chr} <p/>
+                            <p> The length of the chromosome is: {length} </p>
+                          </body>
+                        </html>
+                        """
+
 
             else:
                 contents = Path('html/error.html').read_text()
