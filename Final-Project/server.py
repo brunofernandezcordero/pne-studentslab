@@ -171,6 +171,35 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 </html>
                 """
 
+            elif self.path.startswith('/geneInfo'):
+                gene = arguments.get('gene', [])[0]
+                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                gene_json = get_ensembl_file(endpoint_id)
+                gene_id = gene_json.get('id', ['Not Found'])
+                start = gene_json.get('start',None)
+                end = gene_json.get('end', None)
+                length = end - start + 1
+                name = gene_json.get('assembly_name','Not found')
+                contents = f"""
+                <!DOCTYPE html>
+                <html lang="en" dir="ltr">
+                  <head>
+                    <meta charset="utf-8">
+                    <title>Gene's Basic Information</title>
+                  </head>
+                  <body style="background-color: lightblue;">
+                    <h1>Gene's Basic Information</h1>
+                    <a href="/">Main Page</a>
+                    <p> The gene  you have selected is: {gene} </p>
+                    <p> The gene's id is : {gene_id} </p>
+                    <p> The gene's start is: {start}</p>
+                    <p> The gene's end is: {end}</p>
+                    <p> The gene's length is: {length} </p>
+                  </body>
+                </html>
+                """
+
+
             else:
                 contents = Path('html/error.html').read_text()
 
