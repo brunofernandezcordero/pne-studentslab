@@ -1,7 +1,23 @@
 import http.server
+import http.client
 import json
 import termcolor
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 import socketserver
+
+def get_ensembl_file(endpoint):
+    SERVER = 'rest.ensembl.org'
+    connection = http.client.HTTPConnection(SERVER)
+
+    ENDPOINT = endpoint
+    PARAMS = '?content-type=application/json'
+    connection.request("GET", ENDPOINT + PARAMS)
+    res = connection.getresponse()
+    data = res.read().decode('utf-8')
+    response = json.loads(data)
+    connection.close()
+    return response
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
@@ -22,16 +38,70 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
             elif self.path.startswith('/listSpecies'):
                 # Remove '/info/' from path
-                limit = arguments.get('gene',['0'])[0]
+                limit = arguments.get('limit',[None])[0]
                 filename = f'html/{path}.html'  # "html/a.html"
-                contents =
+                endpoint_sp = '/info/species'
+                species_json1 = get_ensembl_file(endpoint_sp)
+                species_list = species_json1.get('species',[])
+                species_json = [sp['display_name'] for sp in species_list]
+                if limit:
+                    species_json = species_json[: int(limit)]
+                species_html = ''
+                for sp in species_json:
+                    species_html += f'<li>{sp}</li>'
+
+                contents = f"""
+    <!DOCTYPE html>
+    <html lang="en" dir="ltr">
+      <head>
+        <meta charset="utf-8">
+        <title>List of Species</title>
+      </head>
+      <body style="background-color: lightblue;">
+        <h1>Species</h1>
+        <a href="/">Main Page</a>
+        <p>The total number of species in ensembl is: {len(species_list)}</p>
+        <p> The limit you have selected is: {limit}</p>
+        <p> The names of the species are: 
+            <ul> {species_html} </ul>
+      </body>
+    </html>
+    """
+
+            elif self.path.startswith('/karyotype'):
+                species_karyo = arguments.get('species',[None])[0]
+                if not species_karyo:
+                    contents = Path('html/error.html').read_text()
+                else:
+                    endpoint_karyo = f'/info/assembly/{species_karyo}'
+                    species_assembly_json = get_ensembl_file((endpoint_karyo))
+                    karyo_list = species_assembly_json.get('karyotype',[])
+                    karyo_html = ''
+                    for ch in karyo_list:
+                        karyo_html += f'<li>{ch}</li>'
+                    contents =  f"""
+    <!DOCTYPE html>
+    <html lang="en" dir="ltr">
+      <head>
+        <meta charset="utf-8">
+        <title>List of Chromosomes</title>
+      </head>
+      <body style="background-color: lightblue;">
+        <h1>Species' Chromosomes</h1>
+        <a href="/">Main Page</a>
+        <p> The species you have selected is: {species_karyo}
+        <p> The names of the chromosomes are: 
+            <ul> {karyo_html} </ul>
+      </body>
+    </html>
+    """
+            elif self.path.startswith('/chromosomelength'):
+
             else:
-                with open('html/error.html', 'r') as f:
-                    contents = f.read()
+                contents = Path('html/error.html').read_text()
 
         except FileNotFoundError:
-            with open('html/error.html', 'r') as f:
-                contents = f.read()
+            contents = Path('html/error.html').read_text()
 
         # Generating the response message
         self.send_response(200)  # -- Status line: OK!
