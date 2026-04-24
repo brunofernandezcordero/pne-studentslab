@@ -127,9 +127,54 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         </html>
                         """
 
+            elif self.path.startswith(('/lookup/symbol/homo_sapiens')):
+                gene = arguments.get('gene',[])[0]
+                endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
+                gene_json = get_ensembl_file(endpoint)
+                gene_id = gene_json.get('id',['Not Found'])
+                contents = f"""
+                <!DOCTYPE html>
+                <html lang="en" dir="ltr">
+                  <head>
+                    <meta charset="utf-8">
+                    <title>Human Gene's Stable Identifier (id)</title>
+                  </head>
+                  <body style="background-color: lightblue;">
+                    <h1>Huma Gene's Stable Identifier (id)</h1>
+                    <a href="/">Main Page</a>
+                    <p> The gene  you have selected is: {gene} </p>
+                    <p> The gene's stable identifier is : {gene_id} </p>
+                  </body>
+                </html>
+                """
+            elif self.path.startswith('/sequence/id'):
+                gene = arguments.get('gene', [])[0]
+                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                gene_json = get_ensembl_file(endpoint_id)
+                gene_id = gene_json.get('id', ['Not Found'])
+                endpoint_seq = f'/sequence/id/{gene_id}'
+                seq = get_ensembl_file(endpoint_seq)
+                seq = seq.get('seq',['Not Found'])
+                contents = f"""
+                <!DOCTYPE html>
+                <html lang="en" dir="ltr">
+                  <head>
+                    <meta charset="utf-8">
+                    <title>Human Gene's Stable Identifier (id)</title>
+                  </head>
+                  <body style="background-color: lightblue;">
+                    <h1>Huma Gene's Stable Identifier (id)</h1>
+                    <a href="/">Main Page</a>
+                    <p> The gene  you have selected is: {gene} </p>
+                    <p> The gene's sequence is : {seq} </p>
+                  </body>
+                </html>
+                """
 
             else:
                 contents = Path('html/error.html').read_text()
+
+
 
         except FileNotFoundError:
             contents = Path('html/error.html').read_text()
