@@ -127,7 +127,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         </html>
                         """
 
-            elif self.path.startswith(('/lookup/symbol/homo_sapiens')):
+            elif self.path.startswith('/geneLookup'):
                 gene = arguments.get('gene',[])[0]
                 endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
                 gene_json = get_ensembl_file(endpoint)
@@ -147,7 +147,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                   </body>
                 </html>
                 """
-            elif self.path.startswith('/sequence/id'):
+            elif self.path.startswith('/geneSeq'):
                 gene = arguments.get('gene', [])[0]
                 endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
                 gene_json = get_ensembl_file(endpoint_id)
