@@ -63,6 +63,7 @@ class Seq:
                     comp += "C"
         return comp
 
+
     def read_fasta(self,FILENAME):
         FILENAME = "../sequences/" + FILENAME + ".txt"
         file_contents = Path(FILENAME).read_text()

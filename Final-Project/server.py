@@ -5,6 +5,8 @@ import termcolor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import socketserver
+from P01.Seq1 import Seq
+
 
 def get_ensembl_file(endpoint):
     SERVER = 'rest.ensembl.org'
@@ -199,6 +201,44 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 </html>
                 """
 
+            elif self.path.startswith('/geneCalc'):
+                gene = arguments.get('gene', [''])[0]
+                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                gene_json = get_ensembl_file(endpoint_id)
+                gene_id = gene_json.get('id', [''])
+                if gene_id == '':
+                    perc_html = 'Gene not found '
+                    length = 'Gene not found'
+                else:
+                    endpoint_seq = f'/sequence/id/{gene_id}'
+                    seq = get_ensembl_file(endpoint_seq)
+                    seq = seq.get('seq', ['Not Found'])
+                    length = len(seq)
+                    s_seq = Seq(seq)
+                    dict_count = s_seq.count()
+                    if length > 0:
+                        percentages = {base: (count / length) * 100 for base, count in dict_count.items()}
+                    else:
+                        percentages = {}
+                    perc_html = ''
+                    for base, perc in percentages.items():
+                        perc_html += f'\n{base}: {perc:.2f}%'
+                    contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>Gene's Calculations</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Gene's Calculations</h1>
+                        <a href="/">Main Page</a>
+                        <p> The gene  you have selected is: {gene} </p>
+                        <p> The gene's length is: {length} </p>
+                        <p> The bases percentages are: {perc_html}</p>
+                      </body>
+                    </html>
+                    """
 
             else:
                 contents = Path('html/error.html').read_text()
