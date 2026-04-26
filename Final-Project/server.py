@@ -8,12 +8,13 @@ import socketserver
 from P01.Seq1 import Seq
 
 
-def get_ensembl_file(endpoint):
+def get_ensembl_file(endpoint,overlap=None):
     SERVER = 'rest.ensembl.org'
     connection = http.client.HTTPConnection(SERVER)
-
     ENDPOINT = endpoint
     PARAMS = '?content-type=application/json'
+    if overlap:
+        PARAMS = '&content-type=application/json'
     connection.request("GET", ENDPOINT + PARAMS)
     res = connection.getresponse()
     data = res.read().decode('utf-8')
@@ -39,177 +40,195 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     contents = f.read()
 
             elif self.path.startswith('/listSpecies'):
-                # Remove '/info/' from path
-                limit = arguments.get('limit',[None])[0]
-                filename = f'html/{path}.html'  # "html/a.html"
-                endpoint_sp = '/info/species'
-                species_json1 = get_ensembl_file(endpoint_sp)
-                species_list = species_json1.get('species',[])
-                species_json = [sp['display_name'] for sp in species_list]
-                if limit:
-                    species_json = species_json[: int(limit)]
-                species_html = ''
-                for sp in species_json:
-                    species_html += f'<li>{sp}</li>'
-
-                contents = f"""
-    <!DOCTYPE html>
-    <html lang="en" dir="ltr">
-      <head>
-        <meta charset="utf-8">
-        <title>List of Species</title>
-      </head>
-      <body style="background-color: lightblue;">
-        <h1>Species</h1>
-        <a href="/">Main Page</a>
-        <p>The total number of species in ensembl is: {len(species_list)}</p>
-        <p> The limit you have selected is: {limit}</p>
-        <p> The names of the species are: 
-            <ul> {species_html} </ul>
-      </body>
-    </html>
-    """
-
-            elif self.path.startswith('/karyotype'):
-                species_karyo = arguments.get('species',[None])[0]
-                if not species_karyo:
-                    contents = Path('html/error.html').read_text()
-                else:
-                    endpoint_karyo = f'/info/assembly/{species_karyo}'
-                    species_assembly_json = get_ensembl_file((endpoint_karyo))
-                    karyo_list = species_assembly_json.get('karyotype',[])
-                    karyo_html = ''
-                    for ch in karyo_list:
-                        karyo_html += f'<li>{ch}</li>'
-                    contents =  f"""
-    <!DOCTYPE html>
-    <html lang="en" dir="ltr">
-      <head>
-        <meta charset="utf-8">
-        <title>List of Chromosomes</title>
-      </head>
-      <body style="background-color: lightblue;">
-        <h1>Species' Chromosomes</h1>
-        <a href="/">Main Page</a>
-        <p> The species you have selected is: {species_karyo}
-        <p> The names of the chromosomes are: 
-            <ul> {karyo_html} </ul>
-      </body>
-    </html>
-    """
-            elif self.path.startswith('/chromosomeLength'):
-                species_len = arguments.get('species_len',[None])[0]
-                chr = arguments.get('chr',[None])[0]
-                if not species_len or not chr:
-                    contents = Path('html/error.html').read_text()
-                else:
-                    endpoint_len = f'/info/assembly/{species_len}'
-                    species_assembly_json = get_ensembl_file((endpoint_len))
-                    chr_dicts = species_assembly_json.get('top_level_region', [])
-                    length = 'The chromosome was not found'
-                    for c in chr_dicts:
-                        if chr == c['name']:
-                            length = c['length']
-                            break
+                try:
+                    limit = arguments.get('limit',[None])[0]
+                    endpoint_sp = '/info/species'
+                    species_json1 = get_ensembl_file(endpoint_sp)
+                    species_list = species_json1.get('species',[])
+                    species_json = [sp['display_name'] for sp in species_list]
+                    if limit:
+                        species_json = species_json[: int(limit)]
+                    species_html = ''
+                    for sp in species_json:
+                        species_html += f'<li>{sp}</li>'
 
                     contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>List of Species</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Species</h1>
+                        <a href="/">Main Page</a>
+                        <p>The total number of species in ensembl is: {len(species_list)}</p>
+                        <p> The limit you have selected is: {limit}</p>
+                        <p> The names of the species are: 
+                            <ul> {species_html} </ul>
+                      </body>
+                    </html>
+                    """
+                except Exception:
+                    contents = Path('html/error.html').read_text()
+
+            elif self.path.startswith('/karyotype'):
+                try:
+                    species_karyo = arguments.get('species',[None])[0]
+                    if not species_karyo:
+                        contents = Path('html/error.html').read_text()
+                    else:
+                        endpoint_karyo = f'/info/assembly/{species_karyo}'
+                        species_assembly_json = get_ensembl_file((endpoint_karyo))
+                        karyo_list = species_assembly_json.get('karyotype',[])
+                        karyo_html = ''
+                        for ch in karyo_list:
+                            karyo_html += f'<li>{ch}</li>'
+                        contents =  f"""
                         <!DOCTYPE html>
                         <html lang="en" dir="ltr">
                           <head>
                             <meta charset="utf-8">
-                            <title>Chromosome's Length</title>
+                            <title>List of Chromosomes</title>
                           </head>
                           <body style="background-color: lightblue;">
-                            <h1>Chromosome's Length</h1>
+                            <h1>Species' Chromosomes</h1>
                             <a href="/">Main Page</a>
-                            <p> The species you have selected is: {species_len}
-                            <p> The chromosome you have selected is: {chr} <p/>
-                            <p> The length of the chromosome is: {length} </p>
+                            <p> The species you have selected is: {species_karyo}
+                            <p> The names of the chromosomes are: 
+                                <ul> {karyo_html} </ul>
                           </body>
                         </html>
                         """
 
+                except Exception:
+                    contents = Path('html/error.html').read_text()
+
+            elif self.path.startswith('/chromosomeLength'):
+                try:
+                    species_len = arguments.get('species_len',[None])[0]
+                    chr = arguments.get('chr',[None])[0]
+                    if not species_len or not chr:
+                        contents = Path('html/error.html').read_text()
+                    else:
+                        endpoint_len = f'/info/assembly/{species_len}'
+                        species_assembly_json = get_ensembl_file((endpoint_len))
+                        chr_dicts = species_assembly_json.get('top_level_region', [])
+                        length = 'The chromosome was not found'
+                        for c in chr_dicts:
+                            if chr == c['name']:
+                                length = c['length']
+                                break
+
+                        contents = f"""
+                            <!DOCTYPE html>
+                            <html lang="en" dir="ltr">
+                              <head>
+                                <meta charset="utf-8">
+                                <title>Chromosome's Length</title>
+                              </head>
+                              <body style="background-color: lightblue;">
+                                <h1>Chromosome's Length</h1>
+                                <a href="/">Main Page</a>
+                                <p> The species you have selected is: {species_len}
+                                <p> The chromosome you have selected is: {chr} <p/>
+                                <p> The length of the chromosome is: {length} </p>
+                              </body>
+                            </html>
+                            """
+                except Exception:
+                    contents = Path('html/error.html').read_text()
+
             elif self.path.startswith('/geneLookup'):
-                gene = arguments.get('gene',[])[0]
-                endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
-                gene_json = get_ensembl_file(endpoint)
-                gene_id = gene_json.get('id',['Not Found'])
-                contents = f"""
-                <!DOCTYPE html>
-                <html lang="en" dir="ltr">
-                  <head>
-                    <meta charset="utf-8">
-                    <title>Human Gene's Stable Identifier (id)</title>
-                  </head>
-                  <body style="background-color: lightblue;">
-                    <h1>Huma Gene's Stable Identifier (id)</h1>
-                    <a href="/">Main Page</a>
-                    <p> The gene  you have selected is: {gene} </p>
-                    <p> The gene's stable identifier is : {gene_id} </p>
-                  </body>
-                </html>
-                """
+                try:
+                    gene = arguments.get('gene',[])[0]
+                    endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
+                    gene_json = get_ensembl_file(endpoint)
+                    gene_id = gene_json.get('id',['Not Found'])
+                    contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>Human Gene's Stable Identifier (id)</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Huma Gene's Stable Identifier (id)</h1>
+                        <a href="/">Main Page</a>
+                        <p> The gene  you have selected is: {gene} </p>
+                        <p> The gene's stable identifier is : {gene_id} </p>
+                      </body>
+                    </html>
+                    """
+                except Exception:
+                    contents = Path('html/error.html').read_text()
+
             elif self.path.startswith('/geneSeq'):
-                gene = arguments.get('gene', [])[0]
-                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
-                gene_json = get_ensembl_file(endpoint_id)
-                gene_id = gene_json.get('id', ['Not Found'])
-                endpoint_seq = f'/sequence/id/{gene_id}'
-                seq = get_ensembl_file(endpoint_seq)
-                seq = seq.get('seq',['Not Found'])
-                contents = f"""
-                <!DOCTYPE html>
-                <html lang="en" dir="ltr">
-                  <head>
-                    <meta charset="utf-8">
-                    <title>Human Gene's Stable Identifier (id)</title>
-                  </head>
-                  <body style="background-color: lightblue;">
-                    <h1>Huma Gene's Stable Identifier (id)</h1>
-                    <a href="/">Main Page</a>
-                    <p> The gene  you have selected is: {gene} </p>
-                    <p> The gene's sequence is : {seq} </p>
-                  </body>
-                </html>
-                """
+                try:
+                    gene = arguments.get('gene', [])[0]
+                    endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                    gene_json = get_ensembl_file(endpoint_id)
+                    gene_id = gene_json.get('id', ['Not Found'])
+                    endpoint_seq = f'/sequence/id/{gene_id}'
+                    seq = get_ensembl_file(endpoint_seq)
+                    seq = seq.get('seq',['Not Found'])
+                    contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>Human Gene's Stable Identifier (id)</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Huma Gene's Stable Identifier (id)</h1>
+                        <a href="/">Main Page</a>
+                        <p> The gene  you have selected is: {gene} </p>
+                        <p> The gene's sequence is : {seq} </p>
+                      </body>
+                    </html>
+                    """
+
+                except Exception:
+                    contents = Path('html/error.html').read_text()
 
             elif self.path.startswith('/geneInfo'):
-                gene = arguments.get('gene', [])[0]
-                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
-                gene_json = get_ensembl_file(endpoint_id)
-                gene_id = gene_json.get('id', ['Not Found'])
-                start = gene_json.get('start',None)
-                end = gene_json.get('end', None)
-                length = end - start + 1
-                name = gene_json.get('assembly_name','Not found')
-                contents = f"""
-                <!DOCTYPE html>
-                <html lang="en" dir="ltr">
-                  <head>
-                    <meta charset="utf-8">
-                    <title>Gene's Basic Information</title>
-                  </head>
-                  <body style="background-color: lightblue;">
-                    <h1>Gene's Basic Information</h1>
-                    <a href="/">Main Page</a>
-                    <p> The gene  you have selected is: {gene} </p>
-                    <p> The gene's id is : {gene_id} </p>
-                    <p> The gene's start is: {start}</p>
-                    <p> The gene's end is: {end}</p>
-                    <p> The gene's length is: {length} </p>
-                  </body>
-                </html>
-                """
+                try:
+                    gene = arguments.get('gene', [])[0]
+                    endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                    gene_json = get_ensembl_file(endpoint_id)
+                    gene_id = gene_json.get('id', ['Not Found'])
+                    start = gene_json.get('start',None)
+                    end = gene_json.get('end', None)
+                    length = end - start + 1
+                    name = gene_json.get('assembly_name','Not found')
+                    contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>Gene's Basic Information</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Gene's Basic Information</h1>
+                        <a href="/">Main Page</a>
+                        <p> The gene  you have selected is: {gene} </p>
+                        <p> The gene's id is : {gene_id} </p>
+                        <p> The gene's start is: {start}</p>
+                        <p> The gene's end is: {end}</p>
+                        <p> The gene's length is: {length} </p>
+                      </body>
+                    </html>
+                    """
+
+                except Exception:
+                    contents = Path('html/error.html').read_text()
 
             elif self.path.startswith('/geneCalc'):
-                gene = arguments.get('gene', [''])[0]
-                endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
-                gene_json = get_ensembl_file(endpoint_id)
-                gene_id = gene_json.get('id', [''])
-                if gene_id == '':
-                    perc_html = 'Gene not found '
-                    length = 'Gene not found'
-                else:
+                try:
+                    gene = arguments.get('gene', [''])[0]
+                    endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
+                    gene_json = get_ensembl_file(endpoint_id)
+                    gene_id = gene_json.get('id', [''])
                     endpoint_seq = f'/sequence/id/{gene_id}'
                     seq = get_ensembl_file(endpoint_seq)
                     seq = seq.get('seq', ['Not Found'])
@@ -239,12 +258,42 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                       </body>
                     </html>
                     """
+                except Exception:
+                    contents = Path('html/error.html').read_text()
 
             elif self.path.startswith('/geneList'):
-                chromo = arguments.get('chromo',[])[0]
-                start = int(arguments.get('start',[])[0])
-                end = int(arguments.get('end',[])[0])
-
+                try:
+                    chromo = arguments.get('chromo',[])[0]
+                    start = int(arguments.get('start',[])[0])
+                    end = int(arguments.get('end',[])[0])
+                    region = f'{chromo}:{start}-{end}'
+                    endpoint = f'/overlap/region/human/{region}?feature=gene'
+                    overlap_genes_dict = get_ensembl_file(endpoint,True)
+                    overlap_html = set()
+                    for gene in overlap_genes_dict:
+                        name = gene.get('external_name')
+                        if name:
+                            overlap_html.add(name)
+                    contents = f"""
+                    <!DOCTYPE html>
+                    <html lang="en" dir="ltr">
+                      <head>
+                        <meta charset="utf-8">
+                        <title>Gene's Overlapping</title>
+                      </head>
+                      <body style="background-color: lightblue;">
+                        <h1>Gene's Overlapping</h1>
+                        <a href="/">Main Page</a>
+                        <p> The chromosome you have selected is: {chromo} </p>
+                        <p> The start coordinate is: {start} </p>
+                        <p> The end coordinate is: {end}</p>
+                        <p> The genes that overlap in this region are/is:</p>
+                        <p> {overlap_html} </p>
+                      </body>
+                    </html>
+                    """
+                except Exception:
+                    contents = Path('html/error.html').read_text()
             else:
                 contents = Path('html/error.html').read_text()
 
