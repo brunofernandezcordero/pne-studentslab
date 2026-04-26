@@ -80,26 +80,29 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     else:
                         endpoint_karyo = f'/info/assembly/{species_karyo}'
                         species_assembly_json = get_ensembl_file((endpoint_karyo))
-                        karyo_list = species_assembly_json.get('karyotype',[])
-                        karyo_html = ''
-                        for ch in karyo_list:
-                            karyo_html += f'<li>{ch}</li>'
-                        contents =  f"""
-                        <!DOCTYPE html>
-                        <html lang="en" dir="ltr">
-                          <head>
-                            <meta charset="utf-8">
-                            <title>List of Chromosomes</title>
-                          </head>
-                          <body style="background-color: lightblue;">
-                            <h1>Species' Chromosomes</h1>
-                            <a href="/">Main Page</a>
-                            <p> The species you have selected is: {species_karyo}
-                            <p> The names of the chromosomes are: 
-                                <ul> {karyo_html} </ul>
-                          </body>
-                        </html>
-                        """
+                        karyo_list = species_assembly_json.get('karyotype',None)
+                        if not karyo_list:
+                            contents = Path('html/error.html').read_text()
+                        else:
+                            karyo_html = ''
+                            for ch in karyo_list:
+                                karyo_html += f'<li>{ch}</li>'
+                            contents =  f"""
+                            <!DOCTYPE html>
+                            <html lang="en" dir="ltr">
+                              <head>
+                                <meta charset="utf-8">
+                                <title>List of Chromosomes</title>
+                              </head>
+                              <body style="background-color: lightblue;">
+                                <h1>Species' Chromosomes</h1>
+                                <a href="/">Main Page</a>
+                                <p> The species you have selected is: {species_karyo}
+                                <p> The names of the chromosomes are: 
+                                    <ul> {karyo_html} </ul>
+                              </body>
+                            </html>
+                            """
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
@@ -144,22 +147,25 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene = arguments.get('gene',[])[0]
                     endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
                     gene_json = get_ensembl_file(endpoint)
-                    gene_id = gene_json.get('id',['Not Found'])
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>Human Gene's Stable Identifier (id)</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Huma Gene's Stable Identifier (id)</h1>
-                        <a href="/">Main Page</a>
-                        <p> The gene  you have selected is: {gene} </p>
-                        <p> The gene's stable identifier is : {gene_id} </p>
-                      </body>
-                    </html>
-                    """
+                    gene_id = gene_json.get('id',[None])
+                    if not gene_id:
+                        contents = Path('html/error.html').read_text()
+                    else:
+                        contents = f"""
+                        <!DOCTYPE html>
+                        <html lang="en" dir="ltr">
+                          <head>
+                            <meta charset="utf-8">
+                            <title>Human Gene's Stable Identifier (id)</title>
+                          </head>
+                          <body style="background-color: lightblue;">
+                            <h1>Huma Gene's Stable Identifier (id)</h1>
+                            <a href="/">Main Page</a>
+                            <p> The gene  you have selected is: {gene} </p>
+                            <p> The gene's stable identifier is : {gene_id} </p>
+                          </body>
+                        </html>
+                        """
                 except Exception:
                     contents = Path('html/error.html').read_text()
 
