@@ -240,6 +240,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     </html>
                     """
 
+            elif self.path.startswith('/geneList'):
+                chromo = arguments.get('chromo',[])[0]
+                start = int(arguments.get('start',[])[0])
+                end = int(arguments.get('end',[])[0])
+
             else:
                 contents = Path('html/error.html').read_text()
 
