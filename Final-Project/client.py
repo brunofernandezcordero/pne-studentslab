@@ -28,10 +28,12 @@ if __name__ == '__main__':
     print('         REST API CLIENT         ')
     print('-'*30)
 
-    print('\n Request 1: List of species in database')
+    print('\nRequest 1: List of species in database')
     limit = int(input('Enter the limit desired: '))
     data = request(f'/listSpecies?limit={limit}')
     if data:
         print(f'The limit established is: {data['limit']}')
         print(f'The database has a total of {data['species_length']} species')
         print(f'The first {limit} species are: {data['species_json']}')
+
+    # Temrminar ultimas request igual que la primera
