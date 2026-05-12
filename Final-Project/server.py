@@ -7,6 +7,18 @@ from urllib.parse import parse_qs, urlparse
 import socketserver
 from P01.Seq1 import Seq
 
+import jinja2 as j
+from pathlib import Path
+
+
+def read_html_file(filename):
+    # Read the HTML file as text
+    contents = Path("html/" + filename).read_text()
+
+    # Convert the text into a Jinja template object
+    contents = j.Template(contents)
+
+    return contents
 
 def get_ensembl_file(endpoint,overlap=None):
     SERVER = 'rest.ensembl.org'
@@ -35,6 +47,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Print the request line
         termcolor.cprint(self.requestline, 'green')
         try:
+            json_mode = arguments.get('json',[0])[0] =='1'
             if self.path == '/':
                 with open('html/index.html', 'r') as f:
                     contents = f.read()
@@ -52,23 +65,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     for sp in species_json:
                         species_html += f'<li>{sp}</li>'
 
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>List of Species</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Species</h1>
-                        <a href="/">Main Page</a>
-                        <p>The total number of species in ensembl is: {len(species_list)}</p>
-                        <p> The limit you have selected is: {limit}</p>
-                        <p> The names of the species are: 
-                            <ul> {species_html} </ul>
-                      </body>
-                    </html>
-                    """
+                    contents = read_html_file('listspecies.html').render(
+                            species_html=species_html,
+                            species_length=len(species_list),
+                            limit=limit
+                        )
+                    if json_mode:
+                        contents = {
+                            'species_json':species_json,
+                            'species_length': len(species_list),
+                            'limit': limit
+                        }
                 except Exception:
                     contents = Path('html/error.html').read_text()
 
@@ -87,22 +94,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             karyo_html = ''
                             for ch in karyo_list:
                                 karyo_html += f'<li>{ch}</li>'
-                            contents =  f"""
-                            <!DOCTYPE html>
-                            <html lang="en" dir="ltr">
-                              <head>
-                                <meta charset="utf-8">
-                                <title>List of Chromosomes</title>
-                              </head>
-                              <body style="background-color: lightblue;">
-                                <h1>Species' Chromosomes</h1>
-                                <a href="/">Main Page</a>
-                                <p> The species you have selected is: {species_karyo}
-                                <p> The names of the chromosomes are: 
-                                    <ul> {karyo_html} </ul>
-                              </body>
-                            </html>
-                            """
+                            contents = read_html_file('karyotype.html').render(
+                                species_karyo=species_karyo,
+                                karyo_html=karyo_html
+                            )
+                            if json_mode:
+                                contents = {
+                                    'species_karyo': species_karyo,
+                                    'karyo_list': karyo_list
+                                }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
@@ -123,22 +123,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                 length = c['length']
                                 break
 
-                        contents = f"""
-                            <!DOCTYPE html>
-                            <html lang="en" dir="ltr">
-                              <head>
-                                <meta charset="utf-8">
-                                <title>Chromosome's Length</title>
-                              </head>
-                              <body style="background-color: lightblue;">
-                                <h1>Chromosome's Length</h1>
-                                <a href="/">Main Page</a>
-                                <p> The species you have selected is: {species_len}
-                                <p> The chromosome you have selected is: {chr} <p/>
-                                <p> The length of the chromosome is: {length} </p>
-                              </body>
-                            </html>
-                            """
+                        contents = read_html_file('chromosome_length.html').render(
+                            species_len=species_len,
+                            chr=chr,
+                            length=length
+                        )
+                        if json_mode:
+                            contents = {
+                                'species_len': species_len,
+                                'chr': chr,
+                                'length': length
+                            }
                 except Exception:
                     contents = Path('html/error.html').read_text()
 
@@ -151,21 +146,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     if not gene_id:
                         contents = Path('html/error.html').read_text()
                     else:
-                        contents = f"""
-                        <!DOCTYPE html>
-                        <html lang="en" dir="ltr">
-                          <head>
-                            <meta charset="utf-8">
-                            <title>Human Gene's Stable Identifier (id)</title>
-                          </head>
-                          <body style="background-color: lightblue;">
-                            <h1>Huma Gene's Stable Identifier (id)</h1>
-                            <a href="/">Main Page</a>
-                            <p> The gene  you have selected is: {gene} </p>
-                            <p> The gene's stable identifier is : {gene_id} </p>
-                          </body>
-                        </html>
-                        """
+                        contents = read_html_file('gene_lookup.html').render(
+                            gene=gene,
+                            gene_id=gene_id
+                        )
+                        if json_mode:
+                            contents = {
+                                'gene': gene,
+                                'gene_id': gene_id
+                            }
                 except Exception:
                     contents = Path('html/error.html').read_text()
 
@@ -178,21 +167,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     endpoint_seq = f'/sequence/id/{gene_id}'
                     seq = get_ensembl_file(endpoint_seq)
                     seq = seq.get('seq',['Not Found'])
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>Human Gene's Stable Identifier (id)</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Huma Gene's Stable Identifier (id)</h1>
-                        <a href="/">Main Page</a>
-                        <p> The gene  you have selected is: {gene} </p>
-                        <p> The gene's sequence is : {seq} </p>
-                      </body>
-                    </html>
-                    """
+                    formatted_seq = '\n'.join(
+                        seq[i:i + 80] for i in range(0, len(seq), 80)
+                    )
+                    contents = read_html_file('gene_seq.html').render(
+                        gene=gene,
+                        seq=formatted_seq
+                    )
+                    if json_mode:
+                        contents = {
+                            'gene': gene,
+                            'seq': seq
+                        }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
@@ -206,25 +192,21 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     start = gene_json.get('start',None)
                     end = gene_json.get('end', None)
                     length = end - start + 1
-                    name = gene_json.get('assembly_name','Not found')
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>Gene's Basic Information</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Gene's Basic Information</h1>
-                        <a href="/">Main Page</a>
-                        <p> The gene  you have selected is: {gene} </p>
-                        <p> The gene's id is : {gene_id} </p>
-                        <p> The gene's start is: {start}</p>
-                        <p> The gene's end is: {end}</p>
-                        <p> The gene's length is: {length} </p>
-                      </body>
-                    </html>
-                    """
+                    contents = read_html_file('gene_info.html').render(
+                        gene=gene,
+                        gene_id=gene_id,
+                        start=start,
+                        end=end,
+                        length=length
+                    )
+                    if json_mode:
+                        contents = {
+                            'gene': gene,
+                            'gene_id': gene_id,
+                            'start': start,
+                            'end': end,
+                            'length': length
+                        }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
@@ -248,22 +230,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     perc_html = ''
                     for base, perc in percentages.items():
                         perc_html += f'\n{base}: {perc:.2f}%'
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>Gene's Calculations</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Gene's Calculations</h1>
-                        <a href="/">Main Page</a>
-                        <p> The gene  you have selected is: {gene} </p>
-                        <p> The gene's length is: {length} </p>
-                        <p> The bases percentages are: {perc_html}</p>
-                      </body>
-                    </html>
-                    """
+                    contents = read_html_file('gene_calc.html').render(
+                        gene=gene,
+                        length=length,
+                        perc_html=perc_html
+                    )
+                    if json_mode:
+                        contents = {
+                            'gene': gene,
+                            'length': length,
+                            'perc_html': perc_html
+                        }
                 except Exception:
                     contents = Path('html/error.html').read_text()
 
@@ -280,24 +257,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         name = gene.get('external_name')
                         if name:
                             overlap_html.add(name)
-                    contents = f"""
-                    <!DOCTYPE html>
-                    <html lang="en" dir="ltr">
-                      <head>
-                        <meta charset="utf-8">
-                        <title>Gene's Overlapping</title>
-                      </head>
-                      <body style="background-color: lightblue;">
-                        <h1>Gene's Overlapping</h1>
-                        <a href="/">Main Page</a>
-                        <p> The chromosome you have selected is: {chromo} </p>
-                        <p> The start coordinate is: {start} </p>
-                        <p> The end coordinate is: {end}</p>
-                        <p> The genes that overlap in this region are/is:</p>
-                        <p> {overlap_html} </p>
-                      </body>
-                    </html>
-                    """
+                    contents = read_html_file('gene_list.html').render(
+                        chromo=chromo,
+                        start=start,
+                        end=end,
+                        overlap_html=overlap_html
+                    )
+                    if json_mode:
+                        contents = {
+                            'chromo': chromo,
+                            'start': start,
+                            'end': end,
+                            'overlap_html': overlap_html
+                        }
                 except Exception:
                     contents = Path('html/error.html').read_text()
             else:
@@ -311,15 +283,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Generating the response message
         self.send_response(200)  # -- Status line: OK!
 
-        # Define the content-type header:
-        self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', len(contents.encode()))
-
-        # The header is finished
-        self.end_headers()
-
-        # Send the response message
-        self.wfile.write(contents.encode())
+        if json_mode:
+            self.send_header('Content-Type', 'aplication/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(contents).encode())
+        else:
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(contents.encode()))
+            self.end_headers()
+            self.wfile.write(contents.encode())
 
         return
 
