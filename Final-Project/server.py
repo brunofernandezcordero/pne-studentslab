@@ -72,12 +72,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         )
                     if json_mode:
                         contents = {
+                            'Error': False,
                             'species_json':species_json,
                             'species_length': len(species_list),
                             'limit': limit
                         }
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/karyotype'):
                 try:
@@ -100,12 +103,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             )
                             if json_mode:
                                 contents = {
+                                    'Error': False,
                                     'species_karyo': species_karyo,
                                     'karyo_list': karyo_list
                                 }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/chromosomeLength'):
                 try:
@@ -130,12 +136,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         )
                         if json_mode:
                             contents = {
+                                'Error': False,
                                 'species_len': species_len,
                                 'chr': chr,
                                 'length': length
                             }
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/geneLookup'):
                 try:
@@ -152,11 +161,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         )
                         if json_mode:
                             contents = {
+                                'Error': False,
                                 'gene': gene,
                                 'gene_id': gene_id
                             }
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/geneSeq'):
                 try:
@@ -176,12 +188,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     )
                     if json_mode:
                         contents = {
+                            'Error': False,
                             'gene': gene,
                             'seq': seq
                         }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/geneInfo'):
                 try:
@@ -201,6 +216,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     )
                     if json_mode:
                         contents = {
+                            'Error': False,
                             'gene': gene,
                             'gene_id': gene_id,
                             'start': start,
@@ -210,6 +226,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
 
             elif self.path.startswith('/geneCalc'):
                 try:
@@ -237,12 +255,16 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     )
                     if json_mode:
                         contents = {
+                            'Error': False,
                             'gene': gene,
                             'length': length,
                             'perc_html': perc_html
                         }
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
+
 
             elif self.path.startswith('/geneList'):
                 try:
@@ -256,7 +278,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     for gene in overlap_genes_dict:
                         name = gene.get('external_name')
                         if name:
-                            overlap_html.add(name)
+                            overlap_html.append(name)
                     contents = read_html_file('gene_list.html').render(
                         chromo=chromo,
                         start=start,
@@ -265,6 +287,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     )
                     if json_mode:
                         contents = {
+                            'Error': False,
                             'chromo': chromo,
                             'start': start,
                             'end': end,
@@ -272,6 +295,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         }
                 except Exception:
                     contents = Path('html/error.html').read_text()
+                    if json_mode:
+                        contents = {'Error': True}
             else:
                 contents = Path('html/error.html').read_text()
 
