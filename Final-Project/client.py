@@ -88,6 +88,7 @@ if __name__ == '__main__':
     end = input('Select the end: ')
     data = request(f"geneList?chromo={chr}&start={int(start)}&end={int(end)}")
     if data:
-        print(f'The chromosome chosen was: {chr}')
-        print(f'The start and end chosen were: {start}-{end}')
-        print(f'The genes overlapping in this region are: {data['overlap_html']}')
+        print(data)
+      #  print(f'The chromosome chosen was: {chr}')
+       # print(f'The start and end chosen were: {start}-{end}')
+      #  print(f'The genes overlapping in this region are: {data['overlap_html']}')

@@ -252,7 +252,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     region = f'{chromo}:{start}-{end}'
                     endpoint = f'/overlap/region/human/{region}?feature=gene'
                     overlap_genes_dict = get_ensembl_file(endpoint,True)
-                    overlap_html = set()
+                    overlap_html = []
                     for gene in overlap_genes_dict:
                         name = gene.get('external_name')
                         if name:
