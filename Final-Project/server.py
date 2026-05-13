@@ -126,7 +126,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         contents = read_html_file('chromosome_length.html').render(
                             species_len=species_len,
                             chr=chr,
-                            length=length
+                            length=length # String indeces must be integers, not str
                         )
                         if json_mode:
                             contents = {
