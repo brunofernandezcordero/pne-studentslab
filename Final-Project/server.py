@@ -2,11 +2,9 @@ import http.server
 import http.client
 import json
 import termcolor
-from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import socketserver
 from P01.Seq1 import Seq
-
 import jinja2 as j
 from pathlib import Path
 
@@ -40,6 +38,7 @@ socketserver.TCPServer.allow_reuse_address = True
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
+        json_mode = False
         # Print the request line
         url_path = urlparse(self.path)
         path = url_path.path  # we get it from here
@@ -151,7 +150,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene = arguments.get('gene',[])[0]
                     endpoint = f'/lookup/symbol/homo_sapiens/{gene}'
                     gene_json = get_ensembl_file(endpoint)
-                    gene_id = gene_json.get('id',[None])
+                    gene_id = gene_json.get('id','Not found')
                     if not gene_id:
                         contents = Path('html/error.html').read_text()
                     else:
@@ -175,23 +174,28 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene = arguments.get('gene', [])[0]
                     endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
                     gene_json = get_ensembl_file(endpoint_id)
-                    gene_id = gene_json.get('id', ['Not Found'])
-                    endpoint_seq = f'/sequence/id/{gene_id}'
-                    seq = get_ensembl_file(endpoint_seq)
-                    seq = seq.get('seq',['Not Found'])
-                    formatted_seq = '\n'.join(
-                        seq[i:i + 80] for i in range(0, len(seq), 80)
-                    )
-                    contents = read_html_file('gene_seq.html').render(
-                        gene=gene,
-                        seq=formatted_seq
-                    )
-                    if json_mode:
-                        contents = {
-                            'Error': False,
-                            'gene': gene,
-                            'seq': seq
-                        }
+                    gene_id = gene_json.get('id', None)
+                    if not gene_id:
+                        contents = Path('html/error.html').read_text()
+                        if json_mode:
+                            contents = {'Error': True}
+                    else:
+                        endpoint_seq = f'/sequence/id/{gene_id}'
+                        seq = get_ensembl_file(endpoint_seq)
+                        seq = seq.get('seq',['Not Found'])
+                        formatted_seq = '\n'.join(
+                            seq[i:i + 80] for i in range(0, len(seq), 80)
+                        )
+                        contents = read_html_file('gene_seq.html').render(
+                            gene=gene,
+                            seq=formatted_seq
+                        )
+                        if json_mode:
+                            contents = {
+                                'Error': False,
+                                'gene': gene,
+                                'seq': seq
+                            }
 
                 except Exception:
                     contents = Path('html/error.html').read_text()
@@ -203,7 +207,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene = arguments.get('gene', [])[0]
                     endpoint_id = f'/lookup/symbol/homo_sapiens/{gene}'
                     gene_json = get_ensembl_file(endpoint_id)
-                    gene_id = gene_json.get('id', ['Not Found'])
+                    gene_id = gene_json.get('id', 'Not Found')
                     start = gene_json.get('start',None)
                     end = gene_json.get('end', None)
                     length = end - start + 1
@@ -237,7 +241,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene_id = gene_json.get('id', [''])
                     endpoint_seq = f'/sequence/id/{gene_id}'
                     seq = get_ensembl_file(endpoint_seq)
-                    seq = seq.get('seq', ['Not Found'])
+                    seq = seq.get('seq', 'Not Found')
                     length = len(seq)
                     s_seq = Seq(seq)
                     dict_count = s_seq.count()
@@ -268,9 +272,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
             elif self.path.startswith('/geneList'):
                 try:
-                    chromo = arguments.get('chromo',[])[0]
-                    start = int(arguments.get('start',[])[0])
-                    end = int(arguments.get('end',[])[0])
+                    chromo = arguments.get('chromo',[None])[0]
+                    start = int(arguments.get('start',[None])[0])
+                    end = int(arguments.get('end',[None])[0])
                     region = f'{chromo}:{start}-{end}'
                     endpoint = f'/overlap/region/human/{region}?feature=gene'
                     overlap_genes_dict = get_ensembl_file(endpoint,True)
@@ -279,6 +283,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         name = gene.get('external_name')
                         if name:
                             overlap_html.append(name)
+                    if not overlap_html:
+                        overlap_html = "No genes overlapping this region were found."
                     contents = read_html_file('gene_list.html').render(
                         chromo=chromo,
                         start=start,
@@ -309,7 +315,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)  # -- Status line: OK!
 
         if json_mode:
-            self.send_header('Content-Type', 'aplication/json')
+            self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(contents).encode())
         else:
