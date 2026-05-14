@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print('\nRequest 1: List of species in database')
     limit = int(input('Enter the limit desired: '))
     data = request(f'/listSpecies?limit={limit}')
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The limit established is: {data['limit']}')
         print(f'The database has a total of {data['species_length']} species')
         print(f'The first {limit} species are: {data['species_json']}')
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     print("\nRequest 2: Information about a species' karyotype")
     species = input('Enter the specie: ')
     data = request(f'/karyotype?species={species}')
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The species selected is: {species}')
         print(f'The species karyotype is: {data['karyo_list']}')
     else:
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     species = input('Enter the species: ')
     chromosome = input('Enter the chromosome: ')
     data = request(f'/chromosomeLength?species_len={species}&chr={chromosome}')
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The species and chromosome selected are: {species} - {chromosome}')
         print(f"The chromosome's length is: {data['length']}") #String indices must be integer, not str
     else:
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     print("\nRequest 4: Gene's ID (Human)")
     gene = input('Enter the gene: ')
     data = request(f"/geneLookup?gene={gene}")
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The gene selected was: {gene}')
         print(f"The gene's ID is: {data['gene_id']}")
     else:
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     print("\nRequest 5: Gene's sequence (Human)")
     gene = input('Enter the gene: ')
     data = request(f"/geneSeq?gene={gene}")
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The gene selected was {gene}')
         print(f"The gene's sequence is: \n{data['seq']}")
     else:
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     print("\nRequest 6: Gene's Information")
     gene = input('Enter the gene:')
     data = request(f"/geneInfo?gene={gene}")
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The gene selected was: {gene}')
         print(f"The gene's ID is: {data['gene_id']}")
         print(f"The gene starts at {data['start']} and ends at {data['end']} ")
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     print("\nRequest 7: Gene's calculation")
     gene = input('Enter the gene: ')
     data = request(f"/geneCalc?gene={gene}")
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The gene selected is: {gene}')
         print(f"The gene's length is {data['length']}")
         print(f"The bases percentages are: {data['perc_html']}")
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     start = input('Select the start: ')
     end = input('Select the end: ')
     data = request(f"/geneList?chromo={chr}&start={int(start)}&end={int(end)}")
-    if not data['Error']:
+    if data and not data['Error']:
         print(f'The chromosome chosen was: {chr}')
         print(f'The start and end chosen were: {start}-{end}')
         print(f'The genes overlapping in this region are: {data['overlap_html']}')
