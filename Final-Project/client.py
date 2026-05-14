@@ -38,7 +38,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
     print("\nRequest 2: Information about a species' karyotype")
     species = input('Enter the specie: ')
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 3: Chromosome's Length")
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 4: Gene's ID (Human)")
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 5: Gene's sequence (Human)")
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 6: Gene's Information")
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 7: Gene's calculation")
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-'*30)
+    print('-'*30)
 
 
     print("\nRequest 8: Gene overlap")
@@ -128,4 +128,4 @@ if __name__ == '__main__':
     else:
         print('There was an Error')
 
-    print('\n-' * 30)
+    print('-' * 30)
