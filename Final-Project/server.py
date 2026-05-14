@@ -8,14 +8,14 @@ from P01.Seq1 import Seq
 import jinja2 as j
 from pathlib import Path
 
+def error_response(json_mode=False):
+    if json_mode:
+        return {'Error': True}
+    return Path('html/error.html').read_text()
 
 def read_html_file(filename):
-    # Read the HTML file as text
     contents = Path("html/" + filename).read_text()
-
-    # Convert the text into a Jinja template object
     contents = j.Template(contents)
-
     return contents
 
 def get_ensembl_file(endpoint,overlap=None):
@@ -39,11 +39,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         json_mode = False
-        # Print the request line
         url_path = urlparse(self.path)
-        path = url_path.path  # we get it from here
+        path = url_path.path
         arguments = parse_qs(url_path.query)
-        # Print the request line
         termcolor.cprint(self.requestline, 'green')
         try:
             json_mode = arguments.get('json',[0])[0] =='1'
@@ -77,9 +75,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             'limit': limit
                         }
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/karyotype'):
                 try:
@@ -108,9 +104,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                 }
 
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/chromosomeLength'):
                 try:
@@ -131,7 +125,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         contents = read_html_file('chromosome_length.html').render(
                             species_len=species_len,
                             chr=chr,
-                            length=length # String indeces must be integers, not str
+                            length=length
                         )
                         if json_mode:
                             contents = {
@@ -141,9 +135,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                 'length': length
                             }
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/geneLookup'):
                 try:
@@ -165,9 +157,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                 'gene_id': gene_id
                             }
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/geneSeq'):
                 try:
@@ -198,9 +188,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             }
 
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/geneInfo'):
                 try:
@@ -229,9 +217,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         }
 
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
             elif self.path.startswith('/geneCalc'):
                 try:
@@ -265,9 +251,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             'perc_html': perc_html
                         }
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
 
 
             elif self.path.startswith('/geneList'):
@@ -300,9 +284,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             'overlap_html': overlap_html
                         }
                 except Exception:
-                    contents = Path('html/error.html').read_text()
-                    if json_mode:
-                        contents = {'Error': True}
+                    contents = error_response(json_mode)
             else:
                 contents = Path('html/error.html').read_text()
 
@@ -311,8 +293,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         except FileNotFoundError:
             contents = Path('html/error.html').read_text()
 
-        # Generating the response message
-        self.send_response(200)  # -- Status line: OK!
+        self.send_response(200)
 
         if json_mode:
             self.send_header('Content-Type', 'application/json')
@@ -326,20 +307,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         return
 
-
-# ------------------------
-# - Server MAIN program
-# ------------------------
-# -- Set the new handler
 Handler = TestHandler
 
-# -- Open the socket server
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
 
     print("Serving at PORT", PORT)
 
-    # -- Main loop: Attend the client. Whenever there is a new
-    # -- clint, the handler is called
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
